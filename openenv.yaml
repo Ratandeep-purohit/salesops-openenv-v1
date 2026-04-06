@@ -68,7 +68,7 @@ tasks:
 # Action space
 # ---------------------------------------------------------------------------
 action_space:
-  type: discrete_typed
+  type: discrete
   actions:
     - name: classify_lead
       values: [hot, warm, cold, enterprise_growth, disqualified]
@@ -124,7 +124,7 @@ observation_schema:
 # Reward
 # ---------------------------------------------------------------------------
 reward:
-  type: normalized_float
+  type: continuous
   range: [0.0, 1.0]
   shaping: dense          # per-step dense rewards + final episode grader
   deterministic: true
