@@ -23,6 +23,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+# Ensure project root is in path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from env import SalesOpsEnv
 from models import Action, ActionType
 from tasks import get_task_ids, get_task_meta
@@ -42,6 +45,9 @@ app = FastAPI(
 # Global environment instance (single-session; use /reset to start a new episode)
 _env = SalesOpsEnv()
 _active_task: Optional[str] = None
+
+# UI module removed as per user request
+
 
 # ---------------------------------------------------------------------------
 # Request / Response schemas
