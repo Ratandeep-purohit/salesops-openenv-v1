@@ -1,0 +1,9 @@
+# SalesOps OpenEnv — pinned dependencies
+# Kept minimal for fast Docker build and low resource usage
+
+pydantic>=2.6.0,<3.0.0
+openai>=1.30.0,<2.0.0
+fastapi>=0.111.0,<1.0.0
+uvicorn[standard]>=0.29.0,<1.0.0
+httpx>=0.27.0,<1.0.0
+python-dotenv>=1.0.0,<2.0.0

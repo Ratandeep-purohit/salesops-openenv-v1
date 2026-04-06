@@ -1,0 +1,189 @@
+# openenv.yaml — SalesOps OpenEnv v1
+# OpenEnv International Hackathon Submission
+# Compliant with OpenEnv specification v1.x
+
+name: salesops-openenv-v1
+version: "1.0.0"
+description: >
+  A production-grade reinforcement learning environment that simulates a
+  real enterprise CRM sales-operations workflow. Agents act as AI SDR/AE
+  interns, qualifying inbound leads, routing them to the correct owner,
+  handling compliance obligations, and scheduling technical demos — all
+  under realistic business constraints.
+
+author:
+  name: OpenEnv Hackathon Team
+  email: contact@salesops-openenv.dev
+
+license: MIT
+
+# ---------------------------------------------------------------------------
+# Environment class entrypoint
+# ---------------------------------------------------------------------------
+env:
+  module: env
+  class: SalesOpsEnv
+  reset_method: reset
+  step_method: step
+  state_method: state
+
+# ---------------------------------------------------------------------------
+# Tasks registered in this environment
+# ---------------------------------------------------------------------------
+tasks:
+  - id: task_easy_hot_lead
+    name: "Hot Pricing-Page Lead Qualification"
+    difficulty: easy
+    max_steps: 10
+    description: >
+      A high-intent SMB contact who visited the pricing page three times
+      and submitted an inbound trial request. Assess urgency, classify as
+      hot, assign to an SDR, set high priority, and schedule a demo.
+    tags: [hot, smb, pricing_page, trial_request]
+
+  - id: task_medium_enterprise_growth
+    name: "Enterprise Growth — Custom Integration & Discovery"
+    difficulty: medium
+    max_steps: 14
+    description: >
+      A mid-market referral lead requiring custom SAP/Workday integration,
+      budget discussion at €80k/yr, and GDPR acknowledgement. Classify as
+      enterprise_growth, route to a Solution Engineer, and schedule a
+      technical discovery call.
+    tags: [enterprise_growth, custom_integration, gdpr, referral]
+
+  - id: task_hard_enterprise_migration
+    name: "High-Stakes Enterprise Migration with Compliance & Legal Risk"
+    difficulty: hard
+    max_steps: 20
+    description: >
+      A 3 200-employee health system performing an emergency 90-day CRM
+      migration. Seven stakeholders, unclear budget ($200k–$400k split),
+      HIPAA + SOC2 + FedRAMP obligations, active security review, and a
+      C-suite sponsor leaving in 6 weeks. Agents must correctly sequence:
+      classify → escalate → notify compliance → request info → schedule demo.
+    tags: [enterprise, hipaa, soc2, fedramp, migration, multi_stakeholder, hard]
+
+# ---------------------------------------------------------------------------
+# Action space
+# ---------------------------------------------------------------------------
+action_space:
+  type: discrete_typed
+  actions:
+    - name: classify_lead
+      values: [hot, warm, cold, enterprise_growth, disqualified]
+    - name: set_priority
+      values: [critical, high, medium, low]
+    - name: assign_owner
+      values: [sdr, ae, solution_engineer, enterprise_ae, compliance_officer, legal]
+    - name: request_more_info
+      values: []
+    - name: escalate_enterprise
+      values: []
+    - name: notify_compliance
+      values: []
+    - name: schedule_demo
+      values: []
+    - name: close_lost
+      values: []
+    - name: close_won
+      values: []
+
+# ---------------------------------------------------------------------------
+# Observation schema (mirrors models.Observation)
+# ---------------------------------------------------------------------------
+observation_schema:
+  lead_id:                 {type: string}
+  lead_source:             {type: string, enum: [pricing_page, inbound_form, outbound, referral, partner, linkedin, conference, unknown]}
+  company_name:            {type: string}
+  company_size:            {type: string, enum: [startup, smb, mid_market, enterprise]}
+  region:                  {type: string, enum: [north_america, europe, apac, latam, mena]}
+  industry:                {type: string}
+  contact_name:            {type: string}
+  contact_title:           {type: string}
+  urgency_score:           {type: number, minimum: 0.0, maximum: 1.0}
+  budget_confidence:       {type: number, minimum: 0.0, maximum: 1.0}
+  stakeholder_count:       {type: integer, minimum: 1}
+  has_existing_contract:   {type: boolean}
+  requested_integrations:  {type: array, items: {type: string}}
+  mentioned_competitors:   {type: array, items: {type: string}}
+  compliance_flags:        {type: array, items: {type: string}}
+  current_stage:           {type: string}
+  current_classification:  {type: string, nullable: true}
+  current_priority:        {type: string, nullable: true}
+  current_owner:           {type: string}
+  demo_scheduled:          {type: boolean}
+  compliance_notified:     {type: boolean}
+  more_info_requested:     {type: boolean}
+  enterprise_escalated:    {type: boolean}
+  step_number:             {type: integer}
+  previous_actions:        {type: array, items: {type: string}}
+  notes:                   {type: string}
+
+# ---------------------------------------------------------------------------
+# Reward
+# ---------------------------------------------------------------------------
+reward:
+  type: normalized_float
+  range: [0.0, 1.0]
+  shaping: dense          # per-step dense rewards + final episode grader
+  deterministic: true
+
+# ---------------------------------------------------------------------------
+# Grading
+# ---------------------------------------------------------------------------
+grading:
+  module: graders
+  function: grade_episode
+  success_threshold: 0.80
+  dimensions:
+    - classification
+    - routing
+    - urgency
+    - compliance
+    - scheduling
+  partial_credit: true
+  penalties:
+    wrong_closure: true
+    late_escalation: true
+    repetition: true
+
+# ---------------------------------------------------------------------------
+# Inference baseline
+# ---------------------------------------------------------------------------
+inference:
+  script: inference.py
+  env_vars:
+    - API_BASE_URL
+    - MODEL_NAME
+    - HF_TOKEN
+    - IMAGE_NAME
+  log_format: strict
+  max_runtime_minutes: 20
+  resource_profile:
+    cpu: 2
+    memory_gb: 8
+
+# ---------------------------------------------------------------------------
+# Docker
+# ---------------------------------------------------------------------------
+docker:
+  image: salesops-openenv
+  tag: latest
+  build_context: "."
+  dockerfile: Dockerfile
+  health_check:
+    path: /health
+    port: 7860
+    timeout_seconds: 30
+
+# ---------------------------------------------------------------------------
+# Hugging Face Space
+# ---------------------------------------------------------------------------
+huggingface:
+  space_type: docker
+  sdk: docker
+  hardware: cpu-basic
+  push_command: "openenv push --repo-id <HF_USERNAME>/salesops-openenv-v1"
+  health_endpoint: /health
+  ping_must_return: 200
