@@ -48,7 +48,7 @@ _active_task: Optional[str] = None
 # ---------------------------------------------------------------------------
 
 class ResetRequest(BaseModel):
-    task_id: str
+    task_id: Optional[str] = None
 
 
 class StepRequest(BaseModel):
@@ -106,17 +106,21 @@ async def list_tasks() -> Dict[str, Any]:
 
 
 @app.post("/reset")
-async def reset_env(req: ResetRequest) -> Dict[str, Any]:
+async def reset_env(req: Optional[ResetRequest] = None) -> Dict[str, Any]:
     global _active_task
-    if req.task_id not in get_task_ids():
+    
+    # If no body or no task_id provided, default to the first task
+    task_id = req.task_id if (req and req.task_id) else get_task_ids()[0]
+    
+    if task_id not in get_task_ids():
         raise HTTPException(
             status_code=400,
-            detail=f"Unknown task_id '{req.task_id}'. Valid: {get_task_ids()}",
+            detail=f"Unknown task_id '{task_id}'. Valid: {get_task_ids()}",
         )
-    obs = _env.reset(req.task_id)
-    _active_task = req.task_id
+    obs = _env.reset(task_id)
+    _active_task = task_id
     return {
-        "task_id": req.task_id,
+        "task_id": task_id,
         "observation": obs.model_dump(mode="json"),
     }
 
