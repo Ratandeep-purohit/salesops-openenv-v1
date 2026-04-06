@@ -1,3 +1,15 @@
+
+---
+title: Salesops Openenv V1
+emoji: 🌍
+colorFrom: red
+colorTo: red
+sdk: docker
+pinned: false
+license: mit
+short_description: 'A production-grade OpenEnv benchmark for enterprise CRM and SalesOps'
+---
+
 # 🏆 SalesOps OpenEnv — Enterprise CRM Workflow RL Environment
 
 [![OpenEnv](https://img.shields.io/badge/OpenEnv-v1.0.0-6366f1?style=flat-square)](https://openenv.yaml)
@@ -346,3 +358,4 @@ MIT — see [LICENSE](LICENSE)
 ---
 
 *Built for the OpenEnv International Hackathon · $30k Prize Pool · Meta × Hugging Face*
+
