@@ -1,6 +1,3 @@
-## 🌍 Live Demo
-Hugging Face Space: https://ratandeep-purohit-salesops-openenv-v1.hf.space
-
 ---
 title: Salesops Openenv V1
 emoji: 🌍
@@ -11,6 +8,10 @@ pinned: false
 license: mit
 short_description: 'Enterprise CRM Workflow RL benchmark'
 ---
+
+## 🌍 Live Demo
+Hugging Face Space: https://ratandeep-purohit-salesops-openenv-v1.hf.space
+
 
 # 🏆 SalesOps OpenEnv — Enterprise CRM Workflow RL Environment
 
