@@ -1,3 +1,5 @@
+## 🌍 Live Demo
+Hugging Face Space: https://ratandeep-purohit-salesops-openenv-v1.hf.space
 
 ---
 title: Salesops Openenv V1
@@ -358,4 +360,8 @@ MIT — see [LICENSE](LICENSE)
 ---
 
 *Built for the OpenEnv International Hackathon · $30k Prize Pool · Meta × Hugging Face*
+
+## 🧪 API Docs
+Swagger: https://ratandeep-purohit-salesops-openenv-v1.hf.space/docs
+
 
