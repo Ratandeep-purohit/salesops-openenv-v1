@@ -7,7 +7,7 @@ colorTo: red
 sdk: docker
 pinned: false
 license: mit
-short_description: 'A production-grade OpenEnv benchmark for enterprise CRM and SalesOps'
+short_description: 'Enterprise CRM Workflow RL benchmark'
 ---
 
 # 🏆 SalesOps OpenEnv — Enterprise CRM Workflow RL Environment
