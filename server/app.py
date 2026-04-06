@@ -192,7 +192,10 @@ async def run_inference(req: RunRequest) -> Dict[str, Any]:
 # Dev entry point
 # ---------------------------------------------------------------------------
 
-if __name__ == "__main__":
+def main() -> None:
     import uvicorn
     port = int(os.getenv("PORT", "7860"))
-    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False, workers=1)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=port, reload=False, workers=1)
+
+if __name__ == "__main__":
+    main()
