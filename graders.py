@@ -173,7 +173,8 @@ def _compute_weighted_score(
     if raw >= 0.80:
         eff_bonus = _efficiency_bonus(steps_taken, meta.max_steps)
 
-    total = min(1.0, raw + eff_bonus)
+    total = min(0.999, raw + eff_bonus)
+    total = max(0.001, total)   # strictly open interval — platform requirement
 
     return EpisodeScore(
         task_id=meta.task_id,
